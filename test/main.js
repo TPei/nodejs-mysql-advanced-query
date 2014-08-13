@@ -74,6 +74,13 @@ describe("QueryGenerator", function () {
             var query = generator.find(table, { 'columnName2' : { greater : 4, greaterOrEqual: 5} });
             assert.equal(query, 'select * from ' + table + ' where columnName2 > 4 and columnName2 >= 5;')
         })
+
+        it('should be able to handle json strings', function() {
+            var table = 'users';
+            var stringified = JSON.stringify({ columnName2: { greater: 4, greaterOrEqual: 5 } });
+            var query = generator.find(table, stringified);
+            assert.equal(query, 'select * from ' + table + ' where columnName2 > 4 and columnName2 >= 5;');
+        })
     });
 
 
