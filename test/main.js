@@ -62,5 +62,11 @@ describe("QueryGenerator", function () {
             var query = generator.find('\'bla', { columnName: {is: '\'bla'}, columnName2: { above: 4 } });
             assert.equal(query, 'select 1 = 1;')
         });
+
+        it('should be able to work if if given multiple comparisionActions for a table', function () {
+            var table = 'users';
+            var query = generator.find(table, { columnName2: { greater: 4, greaterOrEqual: 5 } });
+            assert.equal(query, 'select * from ' + table + ' where columnName2 > 4 and columnName2 >= 5;')
+        });
     });
 });
