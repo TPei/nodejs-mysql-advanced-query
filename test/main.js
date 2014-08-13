@@ -68,5 +68,79 @@ describe("QueryGenerator", function () {
             var query = generator.find(table, { columnName2: { greater: 4, greaterOrEqual: 5 } });
             assert.equal(query, 'select * from ' + table + ' where columnName2 > 4 and columnName2 >= 5;')
         });
+
+        it('should be able to handle column or action names as strings', function() {
+            var table = 'users';
+            var query = generator.find(table, { 'columnName2' : { greater : 4, greaterOrEqual: 5} });
+            assert.equal(query, 'select * from ' + table + ' where columnName2 > 4 and columnName2 >= 5;')
+        })
+    });
+
+
+    describe('#delete', function () {
+        it('should target correct table', function () {
+            var table = 'users';
+            var query = generator.delete(table);
+            assert.equal(query, 'delete * from ' + table + ';')
+        });
+
+        it('should be able to find without queryObject ', function () {
+            var table = 'users';
+            var query = generator.delete(table);
+            assert.equal(query, 'delete * from ' + table + ';')
+        });
+
+        it('should be able to find with empty queryObject ', function () {
+            var table = 'users';
+            var query = generator.delete(table);
+            assert.equal(query, 'delete * from ' + table + ';')
+        });
+
+        it('should add where subquery targeting the correct columns', function () {
+            var table = 'users';
+            var query = generator.delete(table, { columnName: {is: 'bla'}, columnName2: { greater: 4 } });
+            assert.equal(query, 'delete * from ' + table + ' where columnName = \'bla\' and columnName2 > 4;')
+        });
+
+        it('should ignore illegal queryObject columns', function () {
+            var table = 'users';
+            var query = generator.delete(table, { columnName: {is: '\'bla'}, columnName2: { greater: 4 } });
+            assert.equal(query, 'delete * from ' + table + ' where columnName2 > 4;')
+        });
+
+        it('should ignore illegal queryObject comparisionActions', function () {
+            var table = 'users';
+            var query = generator.delete(table, { columnName: {is: '\'bla'}, columnName2: { greater: 4 } });
+            assert.equal(query, 'delete * from ' + table + ' where columnName2 > 4;')
+        });
+
+        it('should ignore queryObject comparisionActions that are not supported', function () {
+            var table = 'users';
+            var query = generator.delete(table, { columnName: {is: 'bla'}, columnName2: { above: 4 } });
+            assert.equal(query, 'delete * from ' + table + ' where columnName = \'bla\';')
+        });
+
+        it('should be able to work when all comparisionActions where illegal or unsupported', function () {
+            var table = 'users';
+            var query = generator.delete(table, { columnName: {is: '\'bla'}, columnName2: { above: 4 } });
+            assert.equal(query, 'delete * from ' + table + ';')
+        });
+
+        it('should be able to work if given table was illegal', function () {
+            var query = generator.delete('\'bla', { columnName: {is: '\'bla'}, columnName2: { above: 4 } });
+            assert.equal(query, 'select 1 = 1;')
+        });
+
+        it('should be able to work if if given multiple comparisionActions for a table', function () {
+            var table = 'users';
+            var query = generator.delete(table, { columnName2: { greater: 4, greaterOrEqual: 5 } });
+            assert.equal(query, 'delete * from ' + table + ' where columnName2 > 4 and columnName2 >= 5;')
+        });
+
+        it('should be able to handle column or action names as strings', function() {
+            var table = 'users';
+            var query = generator.delete(table, { 'columnName2' : { greater : 4, greaterOrEqual: 5} });
+            assert.equal(query, 'delete * from ' + table + ' where columnName2 > 4 and columnName2 >= 5;')
+        })
     });
 });

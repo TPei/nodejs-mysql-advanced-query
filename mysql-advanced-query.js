@@ -12,12 +12,25 @@ function QueryGenerator() {
  * @returns {string} complete mysql query
  */
 QueryGenerator.prototype.find = function(table, queryObject) {
+    return queryHandler('select', table, queryObject);
+}
 
+/**
+ * create delete request
+ * @param table to be queried
+ * @param queryObject columns, modifiers and values for subquery
+ * @returns {string} complete mysql query
+ */
+QueryGenerator.prototype.delete = function(table, queryObject) {
+    return queryHandler('delete', table, queryObject);
+}
+
+function queryHandler(keyword, table, queryObject) {
     // sql injection protection
     if(!isAllowed(table))
         return "select 1 = 1;";
 
-    var query = 'select * from '+table+' where ';
+    var query = keyword + ' * from '+table+' where ';
 
     // no queryObject was given, do simple select
     if(!queryObject)
@@ -25,7 +38,7 @@ QueryGenerator.prototype.find = function(table, queryObject) {
 
     query = query + createSubQuery(queryObject);
 
-    if(query == 'select * from '+table+' where ;')
+    if(query.substring(query.length-8, query.length) == ' where ;')
         return query.substring(0, query.length-8) + ';';
 
     return query;
