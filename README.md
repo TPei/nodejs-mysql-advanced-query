@@ -43,13 +43,13 @@ supported comparision actions:
 
 ###numbers only:
 - less => "<"
--- where column < value
+- - where column < value
 - lessOrEqual => "<="
--- where column <= value
+- - where column <= value
 - greater => ">"
--- where column > value
+- - where column > value
 - greaterOrEqual => ">="
--- where column >= value
+- - where column >= value
 
 illegal (those that are not supported) modifiers will be ignored
 
