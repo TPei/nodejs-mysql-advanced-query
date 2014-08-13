@@ -139,8 +139,15 @@ describe("QueryGenerator", function () {
 
         it('should be able to handle column or action names as strings', function() {
             var table = 'users';
-            var query = generator.delete(table, { 'columnName2' : { greater : 4, greaterOrEqual: 5} });
-            assert.equal(query, 'delete * from ' + table + ' where columnName2 > 4 and columnName2 >= 5;')
+            var query = generator.delete(table, { "columnName2" : { "greater" : 4, "greaterOrEqual": 5} });
+            assert.equal(query, 'delete * from ' + table + ' where columnName2 > 4 and columnName2 >= 5;');
+        })
+
+        it('should be able to handle json strings', function() {
+            var table = 'users';
+            var stringified = JSON.stringify({ columnName2: { greater: 4, greaterOrEqual: 5 } });
+            var query = generator.delete(table, stringified);
+            assert.equal(query, 'delete * from ' + table + ' where columnName2 > 4 and columnName2 >= 5;');
         })
     });
 });

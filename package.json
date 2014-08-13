@@ -1,7 +1,7 @@
 {
     "name": "mysql-advanced-query",
     "description": "mysql query module allowing more than just where = comparisions",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "main": "mysql-advanced-query",
     "keywords": [
         "mysql",

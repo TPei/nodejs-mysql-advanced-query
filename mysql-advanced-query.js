@@ -26,6 +26,20 @@ QueryGenerator.prototype.delete = function(table, queryObject) {
 }
 
 function queryHandler(keyword, table, queryObject) {
+
+    // if it it is json string, parse it
+    try {
+        var o = JSON.parse(queryObject);
+
+        // Handle non-exception-throwing cases:
+        // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+        // but... JSON.parse(null) returns 'null', and typeof null === "object",
+        // so we must check for that, too.
+        if (o && typeof o === "object" && o !== null)
+            queryObject = o;
+    }
+    catch (e) {}
+
     // sql injection protection
     if(!isAllowed(table))
         return "select 1 = 1;";
