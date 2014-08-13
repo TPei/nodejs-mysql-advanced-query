@@ -15,7 +15,7 @@ QueryGenerator.prototype.find = function(table, queryObject) {
 
     // sql injection protection
     if(!isAllowed(table))
-        return "select 1 = 1";
+        return "select 1 = 1;";
 
     var query = 'select * from '+table+' where ';
 
@@ -23,7 +23,12 @@ QueryGenerator.prototype.find = function(table, queryObject) {
     if(!queryObject)
         return query.substring(0, query.length-7) + ';';
 
-    return query + createSubQuery(queryObject);
+    query = query + createSubQuery(queryObject);
+
+    if(query == 'select * from '+table+' where ;')
+        return query.substring(0, query.length-8) + ';';
+
+    return query;
 }
 
 /**
@@ -37,7 +42,7 @@ function createSubQuery(queryObject) {
     // general
     this.queryDictionary['is'] = '=';
     this.queryDictionary['isNot'] = '!=';
-    this.queryDictionary['limit'] = 'limit';
+    //this.queryDictionary['limit'] = 'limit';
 
     // string only
     this.queryDictionary['contains'] = 'like';
@@ -54,6 +59,11 @@ function createSubQuery(queryObject) {
     var query = '';
 
     for(column in queryObject){
+        if(isNaN(column)) {
+            if(!isAllowed(column))
+                continue;
+        }
+
         for(modifier in queryObject[column]) {
 
             if(isNaN(queryObject[column][modifier])) {
@@ -63,7 +73,10 @@ function createSubQuery(queryObject) {
                     continue;
             }
 
-            query += column + ' ' +this.queryDictionary[modifier] + ' ' + queryObject[column][modifier] + ' and ';
+            if(!this.queryDictionary[modifier])
+                continue;
+
+            query += column + ' ' + this.queryDictionary[modifier] + ' ' + queryObject[column][modifier] + ' and ';
         }
     }
 
@@ -75,7 +88,7 @@ function createSubQuery(queryObject) {
 
 /**
  * check if request part is allowed
- * slashes and quotes are not allowed for sql injection sequrity reasons
+ * slashes and quotes are not allowed for sql injection security reasons
  * @param request
  * @returns {boolean}
  */

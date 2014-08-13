@@ -34,10 +34,33 @@ describe("QueryGenerator", function () {
             assert.equal(query, 'select * from ' + table + ' where columnName = \'bla\' and columnName2 > 4;')
         });
 
-        it('should ignore illegal queryObject parameters', function () {
+        it('should ignore illegal queryObject columns', function () {
             var table = 'users';
             var query = generator.find(table, { columnName: {is: '\'bla'}, columnName2: { greater: 4 } });
             assert.equal(query, 'select * from ' + table + ' where columnName2 > 4;')
+        });
+
+        it('should ignore illegal queryObject comparisionActions', function () {
+            var table = 'users';
+            var query = generator.find(table, { columnName: {is: '\'bla'}, columnName2: { greater: 4 } });
+            assert.equal(query, 'select * from ' + table + ' where columnName2 > 4;')
+        });
+
+        it('should ignore queryObject comparisionActions that are not supported', function () {
+            var table = 'users';
+            var query = generator.find(table, { columnName: {is: 'bla'}, columnName2: { above: 4 } });
+            assert.equal(query, 'select * from ' + table + ' where columnName = \'bla\';')
+        });
+
+        it('should be able to work when all comparisionActions where illegal or unsupported', function () {
+            var table = 'users';
+            var query = generator.find(table, { columnName: {is: '\'bla'}, columnName2: { above: 4 } });
+            assert.equal(query, 'select * from ' + table + ';')
+        });
+
+        it('should be able to work if given table was illegal', function () {
+            var query = generator.find('\'bla', { columnName: {is: '\'bla'}, columnName2: { above: 4 } });
+            assert.equal(query, 'select 1 = 1;')
         });
     });
 });
